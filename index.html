@@ -4,273 +4,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>협회 회원사 지도 관리</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        
-        .login-container { 
-            min-height: 100vh; 
-            background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%);
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            padding: 20px;
-        }
-        .login-box { 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            padding: 40px; 
-            width: 100%; 
-            max-width: 400px;
-        }
-        .login-title { 
-            font-size: 24px; 
-            font-weight: bold; 
-            text-align: center; 
-            margin-bottom: 8px;
-            color: #1e40af;
-        }
-        .login-subtitle { 
-            text-align: center; 
-            color: #6b7280; 
-            margin-bottom: 32px;
-        }
+        .login-container { min-height: 100vh; background: linear-gradient(135deg, #e0f2fe 0%, #bfdbfe 100%); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .login-box { background: white; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); padding: 40px; width: 100%; max-width: 400px; }
+        .login-title { font-size: 24px; font-weight: bold; text-align: center; margin-bottom: 8px; color: #1e40af; }
+        .login-subtitle { text-align: center; color: #6b7280; margin-bottom: 32px; }
         .input-group { margin-bottom: 20px; }
-        .input-label { 
-            display: block; 
-            font-size: 14px; 
-            font-weight: 500; 
-            margin-bottom: 8px;
-            color: #374151;
-        }
-        .input-field { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        .input-field:focus { 
-            outline: none; 
-            border-color: #2563eb; 
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-        }
-        .btn { 
-            width: 100%; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 8px; 
-            font-weight: 500; 
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s;
-        }
-        .btn-primary { 
-            background: #2563eb; 
-            color: white;
-        }
+        .input-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; color: #374151; }
+        .input-field { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
+        .input-field:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+        .btn-primary { background: #2563eb; color: white; }
         .btn-primary:hover { background: #1d4ed8; }
-        .error-box { 
-            background: #fef2f2; 
-            border: 1px solid #fecaca; 
-            border-radius: 8px; 
-            padding: 12px; 
-            color: #dc2626; 
-            font-size: 14px;
-            margin-bottom: 16px;
-        }
-        .success-box { 
-            background: #f0fdf4; 
-            border: 1px solid #bbf7d0; 
-            border-radius: 8px; 
-            padding: 12px; 
-            color: #16a34a; 
-            font-size: 14px;
-            margin: 12px 24px 0;
-        }
-        .info-box { 
-            background: #f9fafb; 
-            border-radius: 8px; 
-            padding: 16px; 
-            margin-top: 24px;
-        }
-        
-        .main-container { 
-            display: flex; 
-            flex-direction: column; 
-            height: 100vh;
-        }
-        .header { 
-            background: white; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            padding: 16px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .header-title { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        .header-actions { 
-            display: flex; 
-            gap: 12px; 
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .btn-small { 
-            padding: 8px 16px; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 14px; 
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
+        .error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 12px; color: #dc2626; font-size: 14px; margin-bottom: 16px; }
+        .success-box { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; color: #16a34a; font-size: 14px; margin: 12px 24px 0; }
+        .info-box { background: #f9fafb; border-radius: 8px; padding: 16px; margin-top: 24px; }
+        .main-container { display: flex; flex-direction: column; height: 100vh; }
+        .header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        .header-title { display: flex; align-items: center; gap: 12px; font-size: 18px; font-weight: bold; }
+        .header-actions { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+        .btn-small { padding: 8px 16px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
         .btn-green { background: #16a34a; color: white; }
         .btn-green:hover { background: #15803d; }
         .btn-purple { background: #9333ea; color: white; }
         .btn-purple:hover { background: #7e22ce; }
         .btn-gray { background: #6b7280; color: white; }
         .btn-gray:hover { background: #4b5563; }
-        
-        .map-container { 
-            flex: 1; 
-            position: relative;
-        }
-        #map { 
-            width: 100%; 
-            height: 100%;
-        }
-        
-        .legend { 
-            position: absolute; 
-            top: 16px; 
-            left: 16px; 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 16px;
-            max-width: 250px;
-            z-index: 100;
-        }
-        .legend-title { 
-            font-weight: bold; 
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-        .legend-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 8px; 
-            margin-bottom: 8px;
-            font-size: 13px;
-        }
-        .legend-dot { 
-            width: 12px; 
-            height: 12px; 
-            border-radius: 50%;
-        }
-        .legend-stats { 
-            margin-top: 12px; 
-            padding-top: 12px; 
-            border-top: 1px solid #e5e7eb;
-            font-size: 12px;
-            color: #6b7280;
-        }
-        
-        .detail-panel { 
-            position: absolute; 
-            top: 16px; 
-            right: 16px; 
-            background: white; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            padding: 20px;
-            width: 340px;
-            max-height: 80vh;
-            overflow-y: auto;
-            z-index: 100;
-        }
-        .detail-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: start;
-            margin-bottom: 16px;
-        }
-        .detail-title { 
-            font-weight: bold; 
-            font-size: 16px;
-        }
-        .detail-subtitle { 
-            font-size: 12px; 
-            color: #6b7280;
-            margin-top: 4px;
-        }
-        .close-btn { 
-            background: none; 
-            border: none; 
-            cursor: pointer; 
-            color: #9ca3af;
-            font-size: 20px;
-            padding: 0;
-            width: 24px;
-            height: 24px;
-        }
+        .map-container { flex: 1; position: relative; }
+        #map { width: 100%; height: 100%; }
+        .legend { position: absolute; top: 16px; left: 16px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 16px; max-width: 250px; z-index: 100; }
+        .legend-title { font-weight: bold; margin-bottom: 12px; font-size: 14px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
+        .legend-stats { margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; }
+        .detail-panel { position: absolute; top: 16px; right: 16px; background: white; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); padding: 20px; width: 340px; max-height: 80vh; overflow-y: auto; z-index: 100; }
+        .detail-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px; }
+        .detail-title { font-weight: bold; font-size: 16px; }
+        .detail-subtitle { font-size: 12px; color: #6b7280; margin-top: 4px; }
+        .close-btn { background: none; border: none; cursor: pointer; color: #9ca3af; font-size: 20px; padding: 0; width: 24px; height: 24px; }
         .close-btn:hover { color: #4b5563; }
-        .detail-section { 
-            margin-bottom: 12px;
-            font-size: 13px;
-        }
-        .detail-label { 
-            color: #6b7280; 
-            margin-bottom: 4px;
-            font-size: 12px;
-        }
-        .detail-value { 
-            font-weight: 500;
-        }
-        .detail-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 12px;
-        }
-        .btn-navi { 
-            width: 100%; 
-            background: #facc15; 
-            color: #1f2937; 
-            margin-top: 16px;
-        }
+        .detail-section { margin-bottom: 12px; font-size: 13px; }
+        .detail-label { color: #6b7280; margin-bottom: 4px; font-size: 12px; }
+        .detail-value { font-weight: 500; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn-navi { width: 100%; background: #facc15; color: #1f2937; margin-top: 16px; }
         .btn-navi:hover { background: #eab308; }
-        
-        select { 
-            padding: 8px 12px; 
-            border: 1px solid #d1d5db; 
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
+        select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; }
         .hidden { display: none; }
-        
-        @media (max-width: 768px) {
-            .header { flex-direction: column; align-items: stretch; }
-            .detail-panel { width: calc(100% - 32px); }
-            .legend { max-width: calc(100% - 32px); }
-        }
     </style>
 </head>
 <body>
@@ -284,110 +66,61 @@
             </div>
             <h1 class="login-title">협회 회원사 관리</h1>
             <p class="login-subtitle">임직원 전용 시스템</p>
-            
             <div id="errorMsg" class="error-box hidden"></div>
-            
             <div class="input-group">
                 <label class="input-label">비밀번호</label>
                 <input type="password" id="passwordInput" class="input-field" placeholder="비밀번호를 입력하세요">
             </div>
-            
-            <button onclick="login()" class="btn btn-primary">
-                <span>🔑</span> 로그인
-            </button>
-            
-            <div class="info-box">
-                <p style="font-size: 13px; color: #6b7280;">
-                    <strong>데모 비밀번호:</strong> admin1234
-                </p>
-            </div>
+            <button onclick="login()" class="btn btn-primary"><span>🔑</span> 로그인</button>
+            <div class="info-box"><p style="font-size: 13px; color: #6b7280;"><strong>데모 비밀번호:</strong> admin1234</p></div>
         </div>
     </div>
 
     <div id="mainScreen" class="main-container hidden">
         <header class="header">
             <div class="header-title">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                </svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
                 <span>협회 회원사 지도 관리</span>
             </div>
             <div class="header-actions">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 14px;">📍</span>
-                    <select id="regionFilter" onchange="filterByRegion()">
-                        <option value="전체">전체</option>
-                    </select>
-                </div>
+                <div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 14px;">📍</span><select id="regionFilter" onchange="filterByRegion()"><option value="전체">전체</option></select></div>
                 <button onclick="loadSample()" class="btn-small btn-purple">샘플</button>
-                <label class="btn-small btn-green" style="cursor: pointer;">
-                    <span>📤</span> 업로드
-                    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;" onchange="handleFile(event)">
-                </label>
-                <button onclick="logout()" class="btn-small btn-gray">
-                    <span>🚪</span> 로그아웃
-                </button>
+                <label class="btn-small btn-green" style="cursor: pointer;"><span>📤</span> 업로드<input type="file" id="fileInput" accept=".xlsx,.xls" style="display: none;" onchange="handleFile(event)"></label>
+                <button onclick="logout()" class="btn-small btn-gray"><span>🚪</span> 로그아웃</button>
             </div>
         </header>
-        
         <div id="successMsg" class="success-box hidden"></div>
-        <div id="errorMsg2" class="error-box hidden" style="margin: 12px 24px 0;"></div>
-        
         <div class="map-container">
             <div id="map"></div>
-            
             <div class="legend">
                 <div class="legend-title">범례</div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background: #4CAF50;"></div>
-                    <span>2026년 납부완료</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background: #FFC107;"></div>
-                    <span>2025년 납부완료</span>
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background: #FF4444;"></div>
-                    <span>2025년 미납</span>
-                </div>
-                <div class="legend-stats">
-                    <div>지역: <strong id="currentRegion">전체</strong></div>
-                    <div>표시: <strong id="displayCount">0</strong>개</div>
-                    <div>전체: <strong id="totalCount">0</strong>개</div>
-                </div>
+                <div class="legend-item"><div class="legend-dot" style="background: #4CAF50;"></div><span>2026년 납부완료</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background: #FFC107;"></div><span>2025년 납부완료</span></div>
+                <div class="legend-item"><div class="legend-dot" style="background: #FF4444;"></div><span>2025년 미납</span></div>
+                <div class="legend-stats"><div>지역: <strong id="currentRegion">전체</strong></div><div>표시: <strong id="displayCount">0</strong>개</div><div>전체: <strong id="totalCount">0</strong>개</div></div>
             </div>
-            
             <div id="detailPanel" class="detail-panel hidden"></div>
         </div>
     </div>
 
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3dfec56e257ead2978bc60033728bf38&libraries=services"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3dfec56e257ead2978bc60033728bf38&libraries=services&autoload=false"></script>
     <script>
-        let map;
-        let markers = [];
-        let allMembers = [];
-        let filteredMembers = [];
-        let geocoder;
-        let mapInitialized = false;
-
+        let map, markers = [], allMembers = [], filteredMembers = [], geocoder;
         const sampleData = [
             { 고객번호: 'C001', 회사명: '울산제조(주)', 업종: '제조업', 업태: '철강', 회사주소: '울산광역시 남구 삼산로 100', 부서명: '영업부', 직위: '과장', 전화번호: '010-1234-5678', 지역본부: '울산', 회비금액: '100,000', '2024': 'Y', '2025': 'Y', '2026': 'Y', 납부월: '1월' },
-            { 고객번호: 'C002', 회사명: '동해산업', 업종: '제조업', 업태: '화학', 회사주소: '울산광역시 동구 방어진순환도로 1000', 부서명: '총무부', 직위: '대리', 전화번호: '010-2345-6789', 지역본부: '울산', 회비금액: '150,000', '2024': 'Y', '2025': 'Y', '2026': 'N', 납부월: '3월' },
-            { 고객번호: 'C003', 회사명: '태화상사', 업종: '도소매업', 업태: '무역', 회사주소: '울산광역시 중구 태화로 200', 부서명: '기획부', 직위: '차장', 전화번호: '010-3456-7890', 지역본부: '울산', 회비금액: '80,000', '2024': 'Y', '2025': 'N', '2026': 'N', 납부월: '' },
-            { 고객번호: 'C004', 회사명: '현대엔지니어링', 업종: '건설업', 업태: '토목', 회사주소: '울산광역시 북구 산업로 500', 부서명: '공사부', 직위: '부장', 전화번호: '010-4567-8901', 지역본부: '울산', 회비금액: '200,000', '2024': 'Y', '2025': 'Y', '2026': 'Y', 납부월: '1월' },
-            { 고객번호: 'C005', 회사명: '울산케미칼', 업종: '제조업', 업태: '화학', 회사주소: '울산광역시 울주군 온산읍 처용로 300', 부서명: '연구소', 직위: '팀장', 전화번호: '010-5678-9012', 지역본부: '울산', 회비금액: '120,000', '2024': 'N', '2025': 'Y', '2026': 'N', 납부월: '6월' }
+            { 고객번호: 'C002', 회사명: '동해산업', 업종: '제조업', 업태: '화학', 회사주소: '울산광역시 동구 방어진순환도로 1000', 부서명: '총무부', 직위: '대리', 전화번호: '010-2345-6789', 지역본부: '울산', 회비금액: '150,000', '2024': 'Y', '2025': 'Y', '2026': 'N', 납부월: '3월' }
         ];
 
         function login() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === 'admin1234') {
+            if (document.getElementById('passwordInput').value === 'admin1234') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainScreen').classList.remove('hidden');
-                initMap();
-            } else {
-                showError('비밀번호가 올바르지 않습니다.');
-            }
+                kakao.maps.load(() => {
+                    map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(36.5, 127.5), level: 13 });
+                    geocoder = new kakao.maps.services.Geocoder();
+                });
+            } else showError('비밀번호가 올바르지 않습니다.');
         }
 
         function logout() {
@@ -397,238 +130,95 @@
         }
 
         function showError(msg) {
-            const errorBox = document.getElementById('errorMsg');
-            errorBox.textContent = msg;
-            errorBox.classList.remove('hidden');
-            setTimeout(() => errorBox.classList.add('hidden'), 3000);
+            const box = document.getElementById('errorMsg');
+            box.textContent = msg; box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 3000);
         }
 
         function showSuccess(msg) {
-            const successBox = document.getElementById('successMsg');
-            successBox.textContent = msg;
-            successBox.classList.remove('hidden');
-            setTimeout(() => successBox.classList.add('hidden'), 3000);
-        }
-
-        function initMap() {
-            if (mapInitialized) return;
-            
-            setTimeout(function() {
-                const container = document.getElementById('map');
-                const options = {
-                    center: new kakao.maps.LatLng(36.5, 127.5),
-                    level: 13
-                };
-                map = new kakao.maps.Map(container, options);
-                geocoder = new kakao.maps.services.Geocoder();
-                mapInitialized = true;
-            }, 100);
+            const box = document.getElementById('successMsg');
+            box.textContent = msg; box.classList.remove('hidden');
+            setTimeout(() => box.classList.add('hidden'), 3000);
         }
 
         function loadSample() {
-            allMembers = sampleData;
-            filteredMembers = sampleData;
-            updateRegionFilter();
-            displayMarkers();
-            updateStats();
+            allMembers = filteredMembers = sampleData;
+            updateRegionFilter(); displayMarkers(); updateStats();
             showSuccess('✓ 샘플 데이터가 로드되었습니다!');
         }
 
-        function handleFile(event) {
-            const file = event.target.files[0];
+        function handleFile(e) {
+            const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (ev) => {
                 try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheetName = workbook.SheetNames[0];
-                    const sheet = workbook.Sheets[sheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-                    if (jsonData.length === 0) {
-                        showError('엑셀 파일에 데이터가 없습니다.');
-                        return;
-                    }
-
-                    allMembers = jsonData;
-                    filteredMembers = jsonData;
-                    updateRegionFilter();
-                    displayMarkers();
-                    updateStats();
-                    showSuccess(`✓ ${jsonData.length}개 회원사 데이터가 업로드되었습니다!`);
-                } catch (err) {
-                    console.error('엑셀 읽기 오류:', err);
-                    showError('엑셀 파일을 읽는 중 오류가 발생했습니다.');
-                }
+                    const data = new Uint8Array(ev.target.result);
+                    const wb = XLSX.read(data, { type: 'array' });
+                    const jsonData = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+                    if (jsonData.length === 0) return showError('데이터가 없습니다.');
+                    allMembers = filteredMembers = jsonData;
+                    updateRegionFilter(); displayMarkers(); updateStats();
+                    showSuccess(`✓ ${jsonData.length}개 데이터 업로드 완료!`);
+                } catch { showError('엑셀 파일 읽기 실패'); }
             };
             reader.readAsArrayBuffer(file);
-            event.target.value = '';
+            e.target.value = '';
         }
 
         function updateRegionFilter() {
             const regions = ['전체', ...new Set(allMembers.map(m => m.지역본부).filter(r => r))];
-            const select = document.getElementById('regionFilter');
-            select.innerHTML = regions.map(r => `<option value="${r}">${r}</option>`).join('');
+            document.getElementById('regionFilter').innerHTML = regions.map(r => `<option value="${r}">${r}</option>`).join('');
         }
 
         function filterByRegion() {
             const region = document.getElementById('regionFilter').value;
-            if (region === '전체') {
-                filteredMembers = allMembers;
-            } else {
-                filteredMembers = allMembers.filter(m => m.지역본부 === region);
-            }
-            displayMarkers();
-            updateStats();
+            filteredMembers = region === '전체' ? allMembers : allMembers.filter(m => m.지역본부 === region);
+            displayMarkers(); updateStats();
             document.getElementById('currentRegion').textContent = region;
         }
 
         function displayMarkers() {
-            if (!map || !geocoder) {
-                setTimeout(displayMarkers, 500);
-                return;
-            }
-
-            markers.forEach(marker => marker.setMap(null));
+            if (!map || !geocoder) return setTimeout(displayMarkers, 500);
+            markers.forEach(m => m.setMap(null));
             markers = [];
             document.getElementById('detailPanel').classList.add('hidden');
-
             let firstCoords = null;
 
-            filteredMembers.forEach((member, index) => {
-                const address = member.회사주소 || member.주소;
-                if (!address) return;
-
-                geocoder.addressSearch(address, function(result, status) {
+            filteredMembers.forEach(member => {
+                const addr = member.회사주소 || member.주소;
+                if (!addr) return;
+                geocoder.addressSearch(addr, (result, status) => {
                     if (status === kakao.maps.services.Status.OK) {
                         const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                        
-                        let color = '#FF4444';
-                        if (member['2026'] === 'Y') color = '#4CAF50';
-                        else if (member['2025'] === 'Y') color = '#FFC107';
-
+                        let color = member['2026'] === 'Y' ? '#4CAF50' : member['2025'] === 'Y' ? '#FFC107' : '#FF4444';
                         const markerImage = new kakao.maps.MarkerImage(
-                            `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40"><path fill="${color}" stroke="#fff" stroke-width="2" d="M15 0C8.373 0 3 5.373 3 12c0 8.25 12 28 12 28s12-19.75 12-28c0-6.627-5.373-12-12-12z"/><circle cx="15" cy="12" r="5" fill="#fff"/></svg>`)}`,
-                            new kakao.maps.Size(30, 40),
-                            { offset: new kakao.maps.Point(15, 40) }
+                            `data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="30" height="40"><path fill="${color}" stroke="#fff" stroke-width="2" d="M15 0C8.373 0 3 5.373 3 12c0 8.25 12 28 12 28s12-19.75 12-28c0-6.627-5.373-12-12-12z"/><circle cx="15" cy="12" r="5" fill="#fff"/></svg>`)}`,
+                            new kakao.maps.Size(30, 40), { offset: new kakao.maps.Point(15, 40) }
                         );
-
-                        const marker = new kakao.maps.Marker({
-                            map: map,
-                            position: coords,
-                            image: markerImage,
-                            title: member.회사명
-                        });
-
-                        kakao.maps.event.addListener(marker, 'click', function() {
-                            showDetail(member);
-                            map.panTo(coords);
-                        });
-
+                        const marker = new kakao.maps.Marker({ map, position: coords, image: markerImage, title: member.회사명 });
+                        kakao.maps.event.addListener(marker, 'click', () => { showDetail(member); map.panTo(coords); });
                         markers.push(marker);
-
-                        if (!firstCoords) {
-                            firstCoords = coords;
-                            map.setCenter(coords);
-                            map.setLevel(8);
-                        }
+                        if (!firstCoords) { firstCoords = coords; map.setCenter(coords); map.setLevel(8); }
                     }
                 });
             });
         }
 
-        function showDetail(member) {
+        function showDetail(m) {
             const panel = document.getElementById('detailPanel');
-            const statusText = member['2026'] === 'Y' ? '2026년 납부완료' : 
-                               member['2025'] === 'Y' ? '2025년 납부완료' : '2025년 미납 (탈퇴 가능성)';
-            const statusColor = member['2026'] === 'Y' ? '#16a34a' : 
-                                member['2025'] === 'Y' ? '#ca8a04' : '#dc2626';
-
-            panel.innerHTML = `
-                <div class="detail-header">
-                    <div>
-                        <div class="detail-title">${member.회사명 || '회사명 없음'}</div>
-                        ${member.고객번호 ? `<div class="detail-subtitle">고객번호: ${member.고객번호}</div>` : ''}
-                    </div>
-                    <button class="close-btn" onclick="document.getElementById('detailPanel').classList.add('hidden')">×</button>
-                </div>
-                
-                ${member.회사주소 || member.주소 ? `
-                <div class="detail-section" style="padding-bottom: 12px; border-bottom: 1px solid #e5e7eb;">
-                    <div class="detail-label">주소</div>
-                    <div class="detail-value" style="font-size: 12px;">${member.회사주소 || member.주소}</div>
-                </div>` : ''}
-                
-                <div class="detail-grid">
-                    ${member.업종 ? `<div class="detail-section"><div class="detail-label">업종</div><div class="detail-value">${member.업종}</div></div>` : ''}
-                    ${member.업태 ? `<div class="detail-section"><div class="detail-label">업태</div><div class="detail-value">${member.업태}</div></div>` : ''}
-                    ${member.부서명 ? `<div class="detail-section"><div class="detail-label">부서</div><div class="detail-value">${member.부서명}</div></div>` : ''}
-                    ${member.직위 ? `<div class="detail-section"><div class="detail-label">직위</div><div class="detail-value">${member.직위}</div></div>` : ''}
-                    ${member.전화번호 ? `<div class="detail-section"><div class="detail-label">전화</div><div class="detail-value">${member.전화번호}</div></div>` : ''}
-                    ${member.회비금액 ? `<div class="detail-section"><div class="detail-label">회비</div><div class="detail-value">${member.회비금액}원</div></div>` : ''}
-                </div>
-                
-                <div style="border-bottom: 1px solid #e5e7eb; margin: 12px 0;"></div>
-                
-                <div class="detail-section">
-                    <div class="detail-label">납부 현황</div>
-                    <div style="font-size: 12px; margin-top: 8px;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <span>2024년</span>
-                            <span style="color: ${member['2024'] === 'Y' ? '#2563eb' : '#9ca3af'}; font-weight: ${member['2024'] === 'Y' ? 'bold' : 'normal'};">
-                                ${member['2024'] === 'Y' ? '납부' : '미납'}
-                            </span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                            <span>2025년</span>
-                            <span style="color: ${member['2025'] === 'Y' ? '#ca8a04' : '#9ca3af'}; font-weight: ${member['2025'] === 'Y' ? 'bold' : 'normal'};">
-                                ${member['2025'] === 'Y' ? '납부' : '미납'}
-                            </span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>2026년</span>
-                            <span style="color: ${member['2026'] === 'Y' ? '#16a34a' : '#9ca3af'}; font-weight: ${member['2026'] === 'Y' ? 'bold' : 'normal'};">
-                                ${member['2026'] === 'Y' ? '납부' : '미납'}
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                
-                ${member['2025'] === 'Y' && member['2026'] === 'N' && member.납부월 ? `
-                <div style="background: #fef3c7; padding: 12px; border-radius: 8px; margin-top: 12px;">
-                    <div class="detail-label">예상 납부월</div>
-                    <div style="font-weight: bold; color: #ca8a04;">${member.납부월}</div>
-                </div>` : ''}
-                
-                <div style="border-bottom: 1px solid #e5e7eb; margin: 12px 0;"></div>
-                
-                <div class="detail-section">
-                    <div class="detail-label">현재 상태</div>
-                    <div style="font-weight: bold; color: ${statusColor};">${statusText}</div>
-                </div>
-                
-                <button class="btn btn-small btn-navi" onclick="openNavi('${member.회사주소 || member.주소}')">
-                    🧭 카카오내비
-                </button>
-            `;
-            
+            const statusText = m['2026'] === 'Y' ? '2026년 납부완료' : m['2025'] === 'Y' ? '2025년 납부완료' : '2025년 미납';
+            const statusColor = m['2026'] === 'Y' ? '#16a34a' : m['2025'] === 'Y' ? '#ca8a04' : '#dc2626';
+            panel.innerHTML = `<div class="detail-header"><div><div class="detail-title">${m.회사명}</div>${m.고객번호 ? `<div class="detail-subtitle">고객번호: ${m.고객번호}</div>` : ''}</div><button class="close-btn" onclick="document.getElementById('detailPanel').classList.add('hidden')">×</button></div>${m.회사주소 ? `<div class="detail-section" style="padding-bottom:12px;border-bottom:1px solid #e5e7eb"><div class="detail-label">주소</div><div class="detail-value" style="font-size:12px">${m.회사주소}</div></div>` : ''}<div class="detail-grid">${m.업종 ? `<div class="detail-section"><div class="detail-label">업종</div><div class="detail-value">${m.업종}</div></div>` : ''}${m.업태 ? `<div class="detail-section"><div class="detail-label">업태</div><div class="detail-value">${m.업태}</div></div>` : ''}</div><div style="padding-top:12px;border-top:1px solid #e5e7eb"><div class="detail-label">현재 상태</div><div style="font-weight:bold;color:${statusColor}">${statusText}</div></div><button class="btn btn-small btn-navi" onclick="openNavi('${m.회사주소}')">🧭 카카오내비</button>`;
             panel.classList.remove('hidden');
         }
 
-        function openNavi(address) {
-            window.open(`kakaomap://route?ep=${encodeURIComponent(address)}&by=CAR`, '_blank');
-        }
-
+        function openNavi(addr) { window.open(`kakaomap://route?ep=${encodeURIComponent(addr)}&by=CAR`, '_blank'); }
         function updateStats() {
             document.getElementById('displayCount').textContent = filteredMembers.length;
             document.getElementById('totalCount').textContent = allMembers.length;
         }
-
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') login();
-        });
+        document.getElementById('passwordInput').addEventListener('keypress', e => { if (e.key === 'Enter') login(); });
     </script>
 </body>
 </html>
