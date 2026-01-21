@@ -103,23 +103,34 @@
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=3dfec56e257ead2978bc60033728bf38&libraries=services&autoload=false"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script>
-        let map, markers = [], allMembers = [], filteredMembers = [], geocoder;
+        let map, markers = [], allMembers = [], filteredMembers = [], geocoder, kakaoReady = false;
         const sampleData = [
             { 고객번호: 'C001', 회사명: '울산제조(주)', 업종: '제조업', 업태: '철강', 회사주소: '울산광역시 남구 삼산로 100', 부서명: '영업부', 직위: '과장', 전화번호: '010-1234-5678', 지역본부: '울산', 회비금액: '100,000', '2024': 'Y', '2025': 'Y', '2026': 'Y', 납부월: '1월' },
             { 고객번호: 'C002', 회사명: '동해산업', 업종: '제조업', 업태: '화학', 회사주소: '울산광역시 동구 방어진순환도로 1000', 부서명: '총무부', 직위: '대리', 전화번호: '010-2345-6789', 지역본부: '울산', 회비금액: '150,000', '2024': 'Y', '2025': 'Y', '2026': 'N', 납부월: '3월' }
         ];
 
+        function initKakao(callback) {
+            if (kakaoReady) return callback();
+            const script = document.createElement('script');
+            script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=3dfec56e257ead2978bc60033728bf38&libraries=services&autoload=false';
+            script.onload = () => {
+                kakao.maps.load(() => {
+                    map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(36.5, 127.5), level: 13 });
+                    geocoder = new kakao.maps.services.Geocoder();
+                    kakaoReady = true;
+                    callback();
+                });
+            };
+            document.head.appendChild(script);
+        }
+
         function login() {
             if (document.getElementById('passwordInput').value === 'admin1234') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainScreen').classList.remove('hidden');
-                kakao.maps.load(() => {
-                    map = new kakao.maps.Map(document.getElementById('map'), { center: new kakao.maps.LatLng(36.5, 127.5), level: 13 });
-                    geocoder = new kakao.maps.services.Geocoder();
-                });
+                initKakao(() => {});
             } else showError('비밀번호가 올바르지 않습니다.');
         }
 
@@ -179,7 +190,7 @@
         }
 
         function displayMarkers() {
-            if (!map || !geocoder) return setTimeout(displayMarkers, 500);
+            if (!kakaoReady) return initKakao(displayMarkers);
             markers.forEach(m => m.setMap(null));
             markers = [];
             document.getElementById('detailPanel').classList.add('hidden');
